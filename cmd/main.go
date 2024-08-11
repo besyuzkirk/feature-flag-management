@@ -4,28 +4,27 @@ import (
 	"log"
 
 	"github.com/besyuzkirk/feature-flag-management/cmd/server"
-	"github.com/besyuzkirk/feature-flag-management/config"
 	"github.com/besyuzkirk/feature-flag-management/internal/domain/entities"
 	"github.com/besyuzkirk/feature-flag-management/internal/infrastructure"
 	"github.com/joho/godotenv"
 )
 
 func init() {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load("./.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 }
 
 func main() {
-	// Config and DB setup
-	cfg := config.LoadDBConfig()
-	err := infrastructure.ConnectDB(cfg)
+
+	cont, err := infrastructure.NewContainer()
 	if err != nil {
-		log.Fatalf("Could not connect to the database: %v", err)
+		log.Fatalf("Could not initialize container: %v", err)
 	}
 
-	infrastructure.Migrate(
+	// Veritabanı migration işlemi
+	infrastructure.Migrate(cont.DB,
 		&entities.FeatureFlag{},
 		&entities.FeatureFlagHistory{},
 		&entities.RolloutStrategy{},
@@ -34,10 +33,10 @@ func main() {
 
 	go func() {
 		log.Println("Starting gRPC server...")
-		server.StartGRPCServer()
+		server.StartGRPCServer(cont)
 		log.Println("gRPC server has started.")
 	}()
 
-	server.StartHTTPServer()
+	server.StartHTTPServer(cont)
 
 }

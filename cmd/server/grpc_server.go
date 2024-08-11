@@ -4,8 +4,6 @@ import (
 	"log"
 	"net"
 
-	"github.com/besyuzkirk/feature-flag-management/internal/domain/repositories"
-	"github.com/besyuzkirk/feature-flag-management/internal/domain/services"
 	featureFlagPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/feature_flag"
 	rolloutStrategyPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/rollout_strategy"
 	segmentPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/segment"
@@ -14,18 +12,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-func StartGRPCServer() {
-	flagRepo := repositories.NewFeatureFlagRepository(infrastructure.DB)
-	flagService := services.NewFeatureFlagService(flagRepo)
-	flagGrpcServer := grpcService.NewFeatureFlagServiceServer(flagService)
-
-	rolloutRepo := repositories.NewRolloutStrategyRepository(infrastructure.DB)
-	rolloutService := services.NewRolloutStrategyService(rolloutRepo)
-	rolloutGrpcServer := grpcService.NewRolloutStrategyServiceServer(rolloutService)
-
-	segmentRepo := repositories.NewSegmentRepository(infrastructure.DB)
-	segmentService := services.NewSegmentService(segmentRepo)
-	segmentGrpcServer := grpcService.NewSegmentServiceServer(segmentService)
+func StartGRPCServer(cont *infrastructure.Container) {
+	flagGrpcServer := grpcService.NewFeatureFlagServiceServer(cont.FeatureFlagService)
+	rolloutGrpcServer := grpcService.NewRolloutStrategyServiceServer(cont.RolloutStrategyService)
+	segmentGrpcServer := grpcService.NewSegmentServiceServer(cont.SegmentService)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {

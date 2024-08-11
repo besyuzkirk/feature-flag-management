@@ -3,26 +3,16 @@ package server
 import (
 	"log"
 
-	"github.com/besyuzkirk/feature-flag-management/internal/domain/repositories"
-	"github.com/besyuzkirk/feature-flag-management/internal/domain/services"
 	"github.com/besyuzkirk/feature-flag-management/internal/handlers"
 	"github.com/besyuzkirk/feature-flag-management/internal/infrastructure"
 	"github.com/besyuzkirk/feature-flag-management/internal/routes"
 )
 
-func StartHTTPServer() {
+func StartHTTPServer(cont *infrastructure.Container) {
 
-	flagRepo := repositories.NewFeatureFlagRepository(infrastructure.DB)
-	flagService := services.NewFeatureFlagService(flagRepo)
-	flagHandler := handlers.NewFeatureFlagHandler(flagService)
-
-	segmentRepo := repositories.NewSegmentRepository(infrastructure.DB)
-	segmentService := services.NewSegmentService(segmentRepo)
-	segmentHandler := handlers.NewSegmentHandler(segmentService)
-
-	rolloutRepo := repositories.NewRolloutStrategyRepository(infrastructure.DB)
-	rolloutService := services.NewRolloutStrategyService(rolloutRepo)
-	rolloutHandler := handlers.NewRolloutStrategyHandler(rolloutService)
+	flagHandler := handlers.NewFeatureFlagHandler(cont.FeatureFlagService)
+	segmentHandler := handlers.NewSegmentHandler(cont.SegmentService)
+	rolloutHandler := handlers.NewRolloutStrategyHandler(cont.RolloutStrategyService)
 
 	router := routes.SetupRouter(flagHandler, segmentHandler, rolloutHandler)
 
