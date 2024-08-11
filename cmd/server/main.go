@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/besyuzkirk/feature-flag-management/config"
+	"github.com/besyuzkirk/feature-flag-management/internal/domain/entities"
 	"github.com/besyuzkirk/feature-flag-management/internal/domain/repositories"
 	"github.com/besyuzkirk/feature-flag-management/internal/domain/services"
 	"github.com/besyuzkirk/feature-flag-management/internal/handlers"
@@ -26,6 +27,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v", err)
 	}
+
+	infrastructure.Migrate(
+		&entities.FeatureFlag{},
+		&entities.FeatureFlagHistory{},
+		&entities.RolloutStrategy{},
+		&entities.Segment{},
+	)
 
 	// Repository, Service, and Handler setup for Feature Flags
 	flagRepo := repositories.NewFeatureFlagRepository(infrastructure.DB)

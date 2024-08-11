@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/besyuzkirk/feature-flag-management/config"
 	"gorm.io/driver/postgres"
@@ -21,4 +22,12 @@ func ConnectDB(cfg *config.DBConfig) error {
 
 	DB = db
 	return nil
+}
+
+func Migrate(models ...interface{}) {
+	err := DB.AutoMigrate(models...)
+	if err != nil {
+		log.Fatalf("Could not migrate models: %v", err)
+	}
+	log.Println("Database migration completed successfully.")
 }
