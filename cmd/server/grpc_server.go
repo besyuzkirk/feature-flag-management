@@ -6,7 +6,9 @@ import (
 
 	"github.com/besyuzkirk/feature-flag-management/internal/domain/repositories"
 	"github.com/besyuzkirk/feature-flag-management/internal/domain/services"
-	pb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/feature_flag"
+	featureFlagPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/feature_flag"
+	rolloutStrategyPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/rollout_strategy"
+	segmentPb "github.com/besyuzkirk/feature-flag-management/internal/grpc/generated/segment"
 	grpcService "github.com/besyuzkirk/feature-flag-management/internal/grpc/services"
 	"github.com/besyuzkirk/feature-flag-management/internal/infrastructure"
 	"google.golang.org/grpc"
@@ -15,7 +17,15 @@ import (
 func StartGRPCServer() {
 	flagRepo := repositories.NewFeatureFlagRepository(infrastructure.DB)
 	flagService := services.NewFeatureFlagService(flagRepo)
-	grpcServer := grpcService.NewFeatureFlagServiceServer(flagService)
+	flagGrpcServer := grpcService.NewFeatureFlagServiceServer(flagService)
+
+	rolloutRepo := repositories.NewRolloutStrategyRepository(infrastructure.DB)
+	rolloutService := services.NewRolloutStrategyService(rolloutRepo)
+	rolloutGrpcServer := grpcService.NewRolloutStrategyServiceServer(rolloutService)
+
+	segmentRepo := repositories.NewSegmentRepository(infrastructure.DB)
+	segmentService := services.NewSegmentService(segmentRepo)
+	segmentGrpcServer := grpcService.NewSegmentServiceServer(segmentService)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -23,7 +33,10 @@ func StartGRPCServer() {
 	}
 
 	server := grpc.NewServer()
-	pb.RegisterFeatureFlagServiceServer(server, grpcServer)
+
+	featureFlagPb.RegisterFeatureFlagServiceServer(server, flagGrpcServer)
+	rolloutStrategyPb.RegisterRolloutStrategyServiceServer(server, rolloutGrpcServer)
+	segmentPb.RegisterSegmentServiceServer(server, segmentGrpcServer)
 
 	log.Println("Starting gRPC server on port 50051...")
 	if err := server.Serve(lis); err != nil {
