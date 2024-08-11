@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package featureflag;
+
+option go_package = "/feature_flag";
+
+service FeatureFlagService {
+    rpc GetFeatureFlag(GetFeatureFlagRequest) returns (GetFeatureFlagResponse);
+    rpc ListFeatureFlags(Empty) returns (ListFeatureFlagsResponse);
+    rpc CreateFeatureFlag(CreateFeatureFlagRequest) returns (FeatureFlagResponse);
+    rpc UpdateFeatureFlag(UpdateFeatureFlagRequest) returns (FeatureFlagResponse);
+    rpc DeleteFeatureFlag(DeleteFeatureFlagRequest) returns (Empty);
+    rpc RollbackFeatureFlag(RollbackFeatureFlagRequest) returns (FeatureFlagResponse);
+}
+
+message FeatureFlag {
+    uint32 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message FeatureFlagHistory {
+    uint32 id = 1;
+    uint32 feature_flag_id = 2;
+    string name = 3;
+    string description = 4;
+    bool is_active = 5;
+    string created_at = 6;
+    string updated_at = 7;
+}
+
+message GetFeatureFlagRequest {
+    uint32 id = 1;
+}
+
+message GetFeatureFlagResponse {
+    FeatureFlag feature_flag = 1;
+}
+
+message ListFeatureFlagsResponse {
+    repeated FeatureFlag feature_flags = 1;
+}
+
+message CreateFeatureFlagRequest {
+    string name = 1;
+    string description = 2;
+}
+
+message UpdateFeatureFlagRequest {
+    uint32 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+}
+
+message DeleteFeatureFlagRequest {
+    uint32 id = 1;
+}
+
+message RollbackFeatureFlagRequest {
+    uint32 id = 1;
+}
+
+message FeatureFlagResponse {
+    FeatureFlag feature_flag = 1;
+}
+
+message Empty {}

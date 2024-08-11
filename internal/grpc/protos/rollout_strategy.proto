@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package rolloutstrategy;
+
+option go_package = "/rollout_strategy";
+
+service RolloutStrategyService {
+    rpc GetRolloutStrategy(GetRolloutStrategyRequest) returns (RolloutStrategyResponse);
+    rpc ListRolloutStrategiesByFlag(GetRolloutStrategiesByFlagRequest) returns (ListRolloutStrategiesResponse);
+    rpc CreateRolloutStrategy(CreateRolloutStrategyRequest) returns (RolloutStrategyResponse);
+    rpc UpdateRolloutStrategy(UpdateRolloutStrategyRequest) returns (RolloutStrategyResponse);
+    rpc DeleteRolloutStrategy(DeleteRolloutStrategyRequest) returns (Empty);
+    rpc TrackRolloutProgress(TrackRolloutProgressRequest) returns (TrackRolloutProgressResponse);
+}
+
+message RolloutStrategy {
+    uint32 id = 1;
+    uint32 feature_flag_id = 2;
+    int32 percentage = 3;
+    string description = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message GetRolloutStrategyRequest {
+    uint32 id = 1;
+}
+
+message GetRolloutStrategyResponse {
+    RolloutStrategy rollout_strategy = 1;
+}
+
+message GetRolloutStrategiesByFlagRequest {
+    uint32 feature_flag_id = 1;
+}
+
+message ListRolloutStrategiesResponse {
+    repeated RolloutStrategy rollout_strategies = 1;
+}
+
+message CreateRolloutStrategyRequest {
+    uint32 feature_flag_id = 1;
+    int32 percentage = 2;
+    string description = 3;
+}
+
+message UpdateRolloutStrategyRequest {
+    uint32 id = 1;
+    int32 percentage = 2;
+    string description = 3;
+}
+
+message DeleteRolloutStrategyRequest {
+    uint32 id = 1;
+}
+
+message TrackRolloutProgressRequest {
+    uint32 feature_flag_id = 1;
+}
+
+message TrackRolloutProgressResponse {
+    int32 percentage = 1;
+}
+
+message RolloutStrategyResponse {
+    RolloutStrategy rollout_strategy = 1;
+}
+
+message Empty {}

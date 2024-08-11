@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package segment;
+
+option go_package = "/segment";
+
+service SegmentService {
+    rpc GetSegment(GetSegmentRequest) returns (SegmentResponse);
+    rpc ListSegments(Empty) returns (ListSegmentsResponse);
+    rpc CreateSegment(CreateSegmentRequest) returns (SegmentResponse);
+    rpc UpdateSegment(UpdateSegmentRequest) returns (SegmentResponse);
+    rpc DeleteSegment(DeleteSegmentRequest) returns (Empty);
+}
+
+message Segment {
+    uint32 id = 1;
+    string name = 2;
+    string description = 3;
+    string criteria = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message GetSegmentRequest {
+    uint32 id = 1;
+}
+
+message GetSegmentResponse {
+    Segment segment = 1;
+}
+
+message ListSegmentsResponse {
+    repeated Segment segments = 1;
+}
+
+message CreateSegmentRequest {
+    string name = 1;
+    string description = 2;
+    string criteria = 3;
+}
+
+message UpdateSegmentRequest {
+    uint32 id = 1;
+    string name = 2;
+    string description = 3;
+    string criteria = 4;
+}
+
+message DeleteSegmentRequest {
+    uint32 id = 1;
+}
+
+message SegmentResponse {
+    Segment segment = 1;
+}
+
+message Empty {}
